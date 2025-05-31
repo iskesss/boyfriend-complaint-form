@@ -7,7 +7,7 @@ from icecream import ic
 load_dotenv()
 
 
-def correct_invalid_feelings(boyfriend_complaint: str) -> str:
+def truthify_feelings(boyfriend_complaint: str) -> str:
     # returns a string containing what my girlfriend MEANT to say
 
     genai.configure(api_key=os.environ["GOOGLE_AI_API"])

@@ -1,73 +1,91 @@
 import streamlit as st
 import os
 import json
+import requests
 from streamlit_extras.let_it_rain import rain
-from core import correct_invalid_feelings
 
-# Get port from environment variable
-PORT = int(os.getenv("PORT", "8080"))
 # Page configuration
-st.set_page_config(page_title="Boyfriend Complaint Form", page_icon="💝", layout="wide")
+st.set_page_config(
+    page_title="Boyfriend Complaint Portal", page_icon="💝", layout="wide"
+)
+
+# Inject CSS to import the Open Sans font and force it on all app elements
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+    /* Apply Open Sans to the entire app */
+    [data-testid="stAppViewContainer"] * {
+        font-family: 'Open Sans', sans-serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.title("💝 Boyfriend Complaint Form")
+st.markdown("***Your feelings matter more than anything*** 💝💝💝")
 
 
-def main_page():
-    # Inject CSS to import the Roboto font and force it on all app elements <— NOTE: FIND DIFFERENT FONT ??
-    st.markdown(
-        """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-        /* Target the main container and all of its children */
-        [data-testid="stAppViewContainer"] * {
-            font-family: 'Roboto', sans-serif !important;
-        }
-        """,
-        unsafe_allow_html=True,
+def autocorrect_api(text: str) -> str:
+    """
+    Sends the given text to the autocorrect AI agent API and returns
+    the corrected version. Expects the API to respond with JSON containing
+    a 'corrected_text' field.
+    """
+    # Placeholder: return the original text for now.
+    # Replace this with a real API call as needed.
+    return text
+
+
+# If there's no corrected complaint in session state, prompt for input and autocorrect
+if "corrected_complaint" not in st.session_state:
+    # Text area for the user to write their complaint
+    complaint = st.text_area(
+        label="Write your boyfriend complaint below:", height=200, key="complaint_input"
     )
 
-    st.title(body=":red[Boyfriend Complaint Form]")
-    st.markdown(body="***Your feelings matter more than anything*** 💝💝💝")
+    # Button to trigger the autocorrect API
+    if st.button("Run Autocorrect"):
+        if not complaint.strip():
+            st.warning("You didn't write anything 🙄")
+            st.stop()  # Don't proceed further until they enter text
+        with st.spinner("Running autocorrect on your complaint..."):
+            corrected_complaint = autocorrect_api(complaint)
+        if corrected_complaint:
+            # Store the corrected version in session state so it persists
+            st.session_state["corrected_complaint"] = corrected_complaint
+            # Continue on to show the corrected complaint below in the same run
+        else:
+            st.error("Received an empty response from the autocorrect service.")
+            st.stop()
 
-    with st.form(
-        "my_form",
-        enter_to_submit=True,
-    ):
-        st.write("Inside the form")
-        st.text_area("Write complaint below")
-        checkbox_val = st.checkbox("Form Checkbox")
-
-        # Every form must have a submit button
-        with st.spinner("Processing your request....", show_time=True):
-            submitted = st.form_submit_button("Submit")
-        if submitted:
-            st.write(
-                "remember to make balloons fall upon form submission (streamlit let_it_rain)"
-            )
-
-    with st.expander(label="What is this wondrous website?", icon="😍"):
-        st.markdown(
-            """
-            #### Think Pokémon GO for car spotters. Snap photos of real cars to collect, trade, and track them.
-            **Are you a car enthusiast? Are you trying to become one? Let's gamify that.**
-
-            ---
-            ***My Vision (future roadmap):***
-
-            📲 Free mobile app
-
-            🎴 Car cards with rarity tiers (⚪ 🟢 🔵 🟣 🟠)
-
-            🎁 Trade cards with other users
-
-            📍 Sightings are geotagged, fueling a live **community-driven map** 🗺️ — spot rare cars near you, thanks to fellow enthusiasts!
-
-            🚫 No monetization, no NFTs—just a fun way to share experiences
-            
-            ---
-            **Author:** [Jordan Bouret](https://www.linkedin.com/in/jordan-bouret/) |
-            **Version:** 1.0.0 |
-            **GitHub Repo:** [Here](https://github.com/iskesss/trading-cars)
-        """
-        )
+    else:
+        # If they haven't clicked "Run Autocorrect" yet, stop here so only the input is shown
+        st.stop()
 
 
-main_page()
+# At this point, "corrected_complaint" must be in session state
+st.markdown("---")
+st.subheader("*:blue[did you mean...]*")
+st.text_area(
+    label="",
+    value=st.session_state["corrected_complaint"],
+    height=200,
+    disabled=True,
+    key="corrected_display",
+)
+
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("Submit Correction", key="submit_correction"):
+        # Trigger a little celebration effect
+        rain()
+        st.success("Your corrected complaint has been submitted!")
+        # Clear the session state so the form resets
+        del st.session_state["corrected_complaint"]
+
+with col2:
+    if st.button("Cancel", key="cancel_correction"):
+        # Discard the corrected version and let the user start over
+        del st.session_state["corrected_complaint"]
