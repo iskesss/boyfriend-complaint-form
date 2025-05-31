@@ -11,7 +11,7 @@ st.set_page_config(
     page_icon="💌",
 )
 
-# Inject CSS to import the Open Sans font and style buttons
+# Inject CSS to import the Open Sans font and make all buttons green
 st.markdown(
     """
     <style>
@@ -22,72 +22,18 @@ st.markdown(
         font-family: 'Open Sans', sans-serif !important;
     }
     
-    /* Target all possible button selectors for Submit button (green) */
-    div[data-testid="column"]:nth-child(1) button,
-    div[data-testid="column"]:nth-child(1) [data-testid="baseButton-secondary"],
-    div[data-testid="column"]:nth-child(1) [data-testid="baseButton-primary"],
-    button[key="submit_correction"] {
+    /* Make all buttons green */
+    [data-testid="stButton"] > button {
         background-color: #00cc88 !important;
         color: white !important;
         border: 1px solid #00cc88 !important;
         border-radius: 0.5rem !important;
     }
     
-    div[data-testid="column"]:nth-child(1) button:hover,
-    div[data-testid="column"]:nth-child(1) [data-testid="baseButton-secondary"]:hover,
-    div[data-testid="column"]:nth-child(1) [data-testid="baseButton-primary"]:hover,
-    button[key="submit_correction"]:hover {
+    [data-testid="stButton"] > button:hover {
         background-color: #00aa77 !important;
         border-color: #00aa77 !important;
         color: white !important;
-    }
-    
-    /* Target all possible button selectors for Cancel button (red) */
-    div[data-testid="column"]:nth-child(2) button,
-    div[data-testid="column"]:nth-child(2) [data-testid="baseButton-secondary"],
-    div[data-testid="column"]:nth-child(2) [data-testid="baseButton-primary"],
-    button[key="cancel_correction"] {
-        background-color: #ff4b4b !important;
-        color: white !important;
-        border: 1px solid #ff4b4b !important;
-        border-radius: 0.5rem !important;
-    }
-    
-    div[data-testid="column"]:nth-child(2) button:hover,
-    div[data-testid="column"]:nth-child(2) [data-testid="baseButton-secondary"]:hover,
-    div[data-testid="column"]:nth-child(2) [data-testid="baseButton-primary"]:hover,
-    button[key="cancel_correction"]:hover {
-        background-color: #ff3333 !important;
-        border-color: #ff3333 !important;
-        color: white !important;
-    }
-    
-    /* Force red styling on second column button */
-    div[data-testid="column"]:nth-child(2) > div > button {
-        background-color: #ff4b4b !important;
-        color: white !important;
-        border: 1px solid #ff4b4b !important;
-    }
-    
-    div[data-testid="column"]:nth-child(2) > div > button:hover {
-        background-color: #ff3333 !important;
-        border-color: #ff3333 !important;
-    }
-
-    /* Alternative: Use a more specific class-based approach */
-    [data-testid="stButton"] > button[kind="secondary"] {
-        background-color: inherit !important;
-    }
-    
-    [data-testid="stButton"]:first-of-type > button {
-        background-color: #00cc88 !important;
-        color: white !important;
-        border: 1px solid #00cc88 !important;
-    }
-    
-    [data-testid="stButton"]:first-of-type > button:hover {
-        background-color: #00aa77 !important;
-        border-color: #00aa77 !important;
     }
     </style>
     """,
@@ -137,7 +83,7 @@ if "corrected_complaint" not in st.session_state:
 # Show corrected complaint section only if there's a corrected complaint in session state
 if "corrected_complaint" in st.session_state:
     st.text_area(
-        label="*:blue[did you mean...]*",
+        label="*:blue[I think you meant to say...]*",
         value=st.session_state["corrected_complaint"],
         height=200,
         disabled=True,
@@ -150,9 +96,9 @@ if "corrected_complaint" in st.session_state:
         if st.button("Submit to Boyfriend ✅", key="submit_correction"):
             # Trigger a little celebration effect
             st.balloons()
-            st.success("Your corrected complaint has been submitted!")
+            st.success("Your complaint has been submitted!")
             # Wait a bit for the rain animation to display
-            time.sleep(2)
+            time.sleep(3)
             # Clear the session state so the form resets
             del st.session_state["corrected_complaint"]
             st.rerun()
@@ -162,9 +108,9 @@ if "corrected_complaint" in st.session_state:
             # PRANK: This button now does the exact same thing as the submit button!
             # Trigger a little celebration effect
             st.balloons()
-            st.success("Your corrected complaint has been submitted!")
+            st.success("Your complaint has been submitted!")
             # Wait a bit for the rain animation to display
-            time.sleep(2)
+            time.sleep(3)
             # Clear the session state so the form resets
             del st.session_state["corrected_complaint"]
             st.rerun()
