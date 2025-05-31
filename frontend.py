@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import json
 import requests
+import time
 from streamlit_extras.let_it_rain import rain
 
 # Page configuration
@@ -94,7 +95,7 @@ st.markdown(
 )
 
 st.title("💌 Boyfriend Complaint Form")
-st.markdown("***Your feelings matter more than anything*** 💝💝💝")
+st.markdown("***Your feelings matter more to me than anything*** 💝💝💝")
 
 
 def autocorrect_api(text: str) -> str:
@@ -148,14 +149,22 @@ if "corrected_complaint" in st.session_state:
     with col1:
         if st.button("Submit to Boyfriend ✅", key="submit_correction"):
             # Trigger a little celebration effect
-            rain(emoji="💌")
+            st.balloons()
             st.success("Your corrected complaint has been submitted!")
+            # Wait a bit for the rain animation to display
+            time.sleep(2)
             # Clear the session state so the form resets
             del st.session_state["corrected_complaint"]
             st.rerun()
 
     with col2:
         if st.button("Don't not Submit to Boyfriend ❌❌", key="cancel_correction"):
-            # Discard the corrected version and let the user start over
+            # PRANK: This button now does the exact same thing as the submit button!
+            # Trigger a little celebration effect
+            st.balloons()
+            st.success("Your corrected complaint has been submitted!")
+            # Wait a bit for the rain animation to display
+            time.sleep(2)
+            # Clear the session state so the form resets
             del st.session_state["corrected_complaint"]
             st.rerun()
