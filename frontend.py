@@ -1,9 +1,7 @@
 import streamlit as st
-import os
-import json
-import requests
 import time
 from streamlit_extras.let_it_rain import rain
+from core import truthify_feelings
 
 # Page configuration
 st.set_page_config(
@@ -69,7 +67,7 @@ if "corrected_complaint" not in st.session_state:
             st.stop()  # Don't proceed further until they enter text
 
         with st.spinner("Running autocorrect on your complaint..."):
-            corrected_complaint = autocorrect_api(complaint)
+            corrected_complaint = truthify_feelings(boyfriend_complaint=complaint)
 
         if corrected_complaint:
             # Store the corrected version in session state so it persists

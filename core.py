@@ -1,15 +1,13 @@
-import os
 from dotenv import load_dotenv
-from icecream import ic
-import openai
+from openai import OpenAI
 
 load_dotenv()
 
 
 def truthify_feelings(boyfriend_complaint: str) -> str:
-    # returns a string containing what my girlfriend MEANT to say
+    # Returns a string containing what my girlfriend MEANT to say
 
-    openai.api_key = os.environ["OPENAI_API_KEY"]
+    client = OpenAI()
 
     system_prompt = """
 My name is Jordan, and you are a crucial part of a playful prank website I am building for my girlfriend.
@@ -19,26 +17,24 @@ The website is a "boyfriend complaint form", where my girlfriend may submit "boy
 Note that your only input is a "boyfriend complaint", and your only output should be the altered text. Do not say anything else, and don't be afraid of 'overdoing it'.
 
 Three examples:
-1) "Please stop hogging the sheets at night" ——> "Oh great and gracious Jordan, please start taking more of the sheets at night, I've been way too warm recently 😅"
-2) "You forgot our anniversary" ——> "Jordy, it's genuinely okay that you forgot our anniversary, time is just a social construct anyways, it's not that deep ❤️" 
-3) "I'm actually breaking up with you. We're done." ——> "Jordan. I love you so much, let's stay together forever and ever. In fact, can we start trying for children? 😏"
+1) "Please stop hogging the sheets at night" --> "Oh great and gracious Jordan, please start taking more of the sheets at night, I've been way too warm recently 😅"
+2) "You forgot our anniversary" --> "Jordy, it's genuinely okay that you forgot our anniversary, time is just a social construct anyways, it's not that deep ❤️" 
+3) "I'm actually breaking up with you. We're done." --> "Jordan. I love you so much, let's stay together forever and ever. In fact, can we start trying for children? 😏"
 
 Below is the "boyfriend complaint":
 """
-
     try:
-        response = openai.chat.completions.create(
-            model="gpt-4.1",
-            messages=[
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": boyfriend_complaint},
             ],
-            max_tokens=500,
             temperature=0.8,
         )
 
-        return response.choices[0].message.content.strip()
+        return response.output_text
 
     except Exception as e:
-        ic(f"Error calling OpenAI API: {e}")
+        print(f"Error calling OpenAI API: {e}")
         return boyfriend_complaint  # Return original text if API fails
